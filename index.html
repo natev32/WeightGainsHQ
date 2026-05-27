@@ -413,7 +413,33 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
   <div id="page-meals" class="page">
     <div class="page-title">MEAL PLAN</div>
     <p class="page-sub">~3,200 cal/day · 195g protein · tap EAT to track, 🔀 to swap</p>
-    <div class="info-box">💡 <strong>Tap EAT</strong> to log macros. Tap <strong style="color:#c47aff">🔀 SWAP</strong> to get a different meal that fits your targets. Each slot has 10+ options.</div>
+
+    <!-- Projected daily total -->
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin-bottom:0">Projected Today</div>
+        <span style="font-size:11px;color:var(--text4)">all selected meals</span>
+      </div>
+      <div class="macro-bar">
+        <div class="macro-top"><span>Calories</span><span style="color:var(--yellow)" id="proj-cal">—</span></div>
+        <div class="prog-wrap"><div class="prog-fill" id="proj-cal-bar" style="width:0%;background:var(--yellow)"></div></div>
+      </div>
+      <div class="macro-bar">
+        <div class="macro-top"><span>Protein</span><span style="color:var(--cyan)" id="proj-pro">—</span></div>
+        <div class="prog-wrap"><div class="prog-fill" id="proj-pro-bar" style="width:0%;background:var(--cyan)"></div></div>
+      </div>
+      <div class="macro-bar">
+        <div class="macro-top"><span>Carbs</span><span style="color:var(--orange)" id="proj-carb">—</span></div>
+        <div class="prog-wrap"><div class="prog-fill" id="proj-carb-bar" style="width:0%;background:var(--orange)"></div></div>
+      </div>
+      <div class="macro-bar" style="margin-bottom:0">
+        <div class="macro-top"><span>Fat</span><span style="color:var(--purple)" id="proj-fat">—</span></div>
+        <div class="prog-wrap"><div class="prog-fill" id="proj-fat-bar" style="width:0%;background:var(--purple)"></div></div>
+      </div>
+      <div id="proj-verdict" style="margin-top:12px;font-size:12px;text-align:center;font-weight:600;border-top:1px solid var(--bg3);padding-top:10px"></div>
+    </div>
+
+    <div class="info-box">💡 <strong>Tap EAT</strong> to log macros to the dashboard. Tap <strong style="color:#c47aff">🔀 SWAP</strong> for a different option. Projection updates live as you swap.</div>
     <div id="meal-slots"></div>
   </div>
 
@@ -730,7 +756,7 @@ function switchTab(id){
     document.getElementById("nav-"+t).classList.toggle("active",t===id);
   });
   if(id==="schedule") renderSchedule();
-  if(id==="meals")    renderMeals();
+  if(id==="meals")    { renderMeals(); renderProjected(); }
   if(id==="tips")     renderTips();
   if(id==="workout")  renderPick();
 }
@@ -1081,6 +1107,53 @@ function saveMealActives(){
   persist();
 }
 
+function renderProjected(){
+  const TARGETS = {cal:3200, p:195, c:390, f:100};
+  let totals = {cal:0, p:0, c:0, f:0};
+  MEALS_DATA.forEach(slot=>{
+    const meal = MEAL_LIBRARY[slot.key][MEAL_ACTIVE[slot.key]||0];
+    totals.cal += meal.macros.cal;
+    totals.p   += meal.macros.p;
+    totals.c   += meal.macros.c;
+    totals.f   += meal.macros.f;
+  });
+  const pct = (v,mx) => Math.min(120, Math.round(v/mx*100));
+  const barColor = (v,mx) => v < mx*0.85 ? 'var(--orange)' : v > mx*1.1 ? 'var(--red)' : v > mx ? 'var(--green)' : 'var(--yellow)';
+
+  document.getElementById("proj-cal").textContent  = totals.cal.toLocaleString()+" / "+TARGETS.cal+" kcal";
+  document.getElementById("proj-pro").textContent  = totals.p+"g / "+TARGETS.p+"g";
+  document.getElementById("proj-carb").textContent = totals.c+"g / "+TARGETS.c+"g";
+  document.getElementById("proj-fat").textContent  = totals.f+"g / "+TARGETS.f+"g";
+  document.getElementById("proj-cal-bar").style.width  = pct(totals.cal,TARGETS.cal)+"%";
+  document.getElementById("proj-pro-bar").style.width  = pct(totals.p,TARGETS.p)+"%";
+  document.getElementById("proj-carb-bar").style.width = pct(totals.c,TARGETS.c)+"%";
+  document.getElementById("proj-fat-bar").style.width  = pct(totals.f,TARGETS.f)+"%";
+  document.getElementById("proj-cal-bar").style.background  = barColor(totals.cal,TARGETS.cal);
+  document.getElementById("proj-pro-bar").style.background  = barColor(totals.p,TARGETS.p);
+  document.getElementById("proj-carb-bar").style.background = barColor(totals.c,TARGETS.c);
+  document.getElementById("proj-fat-bar").style.background  = barColor(totals.f,TARGETS.f);
+
+  const calDiff = totals.cal - TARGETS.cal;
+  const protOk  = totals.p >= TARGETS.p * 0.9;
+  let verdict = "", color = "";
+  if(Math.abs(calDiff) <= 150 && protOk){
+    verdict = "✅ On target — great combination"; color = "var(--green)";
+  } else if(calDiff < -300){
+    verdict = `⬆️ ${Math.abs(calDiff)} cal short — swap a meal for something bigger`; color = "var(--orange)";
+  } else if(calDiff < -150){
+    verdict = `⬆️ Slightly low — ${Math.abs(calDiff)} cal under target`; color = "var(--orange)";
+  } else if(calDiff > 300){
+    verdict = `⬇️ ${calDiff} cal over — consider swapping a lighter option`; color = "var(--text3)";
+  } else if(!protOk){
+    verdict = `⚠️ Protein low (${totals.p}g) — swap for a higher-protein option`; color = "var(--orange)";
+  } else {
+    verdict = "✅ Looking good"; color = "var(--green)";
+  }
+  const el = document.getElementById("proj-verdict");
+  el.textContent = verdict;
+  el.style.color = color;
+}
+
 function swapMeal(e, slotKey){
   e.stopPropagation();
   const lib = MEAL_LIBRARY[slotKey];
@@ -1100,6 +1173,7 @@ function swapMeal(e, slotKey){
   saveMealActives();
   renderMeals();
   renderMacrosDash();
+  renderProjected();
 }
 
 function recomputeMacros(){
@@ -1270,6 +1344,7 @@ initMealActives();
 initDashboard();
 renderPick();
 renderMeals();
+renderProjected();
 renderSchedule();
 renderTips();
 </script>
