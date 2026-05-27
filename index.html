@@ -234,6 +234,39 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
 /* INFO BOX */
 .info-box{background:var(--bg2);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--text3);border:1px solid var(--bg3);margin-bottom:16px;line-height:1.5}
 .info-box strong{color:var(--text2)}
+/* SWAP */
+.swap-btn{background:var(--bg3);border:none;border-radius:6px;padding:4px 9px;font-size:10px;color:var(--purple);cursor:pointer;font-weight:700;font-family:var(--body);letter-spacing:.04em;transition:all .15s}
+.swap-btn:hover{background:var(--purple);color:#0d0d1a}
+.swap-btn:active{transform:scale(.95)}
+
+/* SWAP BUTTON */
+.swap-btn{background:var(--bg3);border:none;border-radius:6px;padding:4px 9px;font-size:10px;color:var(--purple);cursor:pointer;font-weight:700;font-family:var(--body);letter-spacing:.04em;transition:all .15s}
+.swap-btn:hover{background:var(--purple);color:#0d0d1a}
+.swap-btn:disabled{opacity:.4;cursor:not-allowed}
+.swap-btn.loading{animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* SWAP SUGGESTION CARD */
+.swap-suggestion{background:#1a0d2e;border:1px solid var(--purple);border-radius:var(--radius-lg);padding:14px 16px;margin-top:10px;display:none}
+.swap-suggestion.visible{display:block;animation:fadein .2s ease}
+.swap-sugg-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:3px}
+.swap-sugg-macros{font-size:11px;color:var(--purple);margin-bottom:8px}
+.swap-sugg-ingredients{margin-bottom:8px}
+.swap-sugg-prep{font-size:12px;color:var(--cyan);font-style:italic;line-height:1.5;margin-bottom:10px}
+.swap-action-row{display:flex;gap:8px}
+.use-this-btn{flex:1;background:var(--purple);color:#0d0d1a;border:none;border-radius:var(--radius);padding:9px;font-size:13px;font-weight:800;cursor:pointer;font-family:var(--body);letter-spacing:.04em;transition:opacity .15s}
+.use-this-btn:hover{opacity:.85}
+.dismiss-btn{background:var(--bg3);color:var(--text3);border:none;border-radius:var(--radius);padding:9px 14px;font-size:13px;cursor:pointer;font-family:var(--body);transition:all .15s}
+.dismiss-btn:hover{color:var(--text)}
+
+/* API KEY SETUP */
+.api-banner{background:#16102a;border:1px solid var(--purple);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px}
+.api-banner-icon{font-size:20px;flex-shrink:0}
+.api-banner-text{font-size:12px;color:var(--text3);line-height:1.5;flex:1}
+.api-banner-text strong{color:var(--purple)}
+.api-setup-btn{background:var(--purple);color:#0d0d1a;border:none;border-radius:var(--radius);padding:6px 12px;font-size:11px;font-weight:800;cursor:pointer;font-family:var(--body);white-space:nowrap;margin-top:6px;display:block}
+.api-key-input{width:100%;background:var(--bg3);border:1px solid var(--purple);border-radius:var(--radius);padding:10px 12px;color:var(--text);font-size:13px;font-family:var(--body);outline:none;margin:10px 0}
+.api-key-input::placeholder{color:var(--text4)}
 
 /* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:var(--max-w);background:var(--bg);border-top:1px solid #181828;padding:8px 6px 16px;display:flex;justify-content:space-around;z-index:40}
@@ -379,8 +412,8 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
   <!-- ══ MEALS ══ -->
   <div id="page-meals" class="page">
     <div class="page-title">MEAL PLAN</div>
-    <p class="page-sub">~3,200 cal/day · 195g protein · tap EAT to track macros</p>
-    <div class="info-box">💡 <strong>Tap EAT</strong> on each meal you consume — the dashboard macros update live. When in doubt, eat. Liquid cals are your easiest lever.</div>
+    <p class="page-sub">~3,200 cal/day · 195g protein · tap EAT to track, 🔀 to swap</p>
+    <div class="info-box">💡 <strong>Tap EAT</strong> to log macros. Tap <strong style="color:#c47aff">🔀 SWAP</strong> to get a different meal that fits your targets. Each slot has 10+ options.</div>
     <div id="meal-slots"></div>
   </div>
 
@@ -553,50 +586,103 @@ const WORKOUTS = {
   }
 };
 
+const MEAL_LIBRARY = {
+  breakfast:[
+    {name:"Builder's Oatmeal Bowl",macros:{cal:700,p:42,c:88,f:18},ingredients:["1.5 cups rolled oats","1 scoop whey protein","1 banana","2 tbsp peanut butter","1 cup whole milk"],prep:"Cook oats in milk, stir in protein off heat, top with banana and PB."},
+    {name:"Egg & Potato Hash",macros:{cal:680,p:38,c:72,f:22},ingredients:["4 whole eggs","2 medium potatoes diced","1 cup bell peppers + onion","1 oz cheddar","1 slice toast"],prep:"Crisp potatoes, add veggies, scramble in eggs, top with cheese."},
+    {name:"Protein Pancakes",macros:{cal:720,p:45,c:82,f:18},ingredients:["1 cup pancake mix","2 scoops whey","2 eggs","1 cup milk","2 tbsp maple syrup","1 tbsp butter"],prep:"Mix batter with whey, cook on griddle. Syrup on top."},
+    {name:"Steak & Eggs",macros:{cal:750,p:55,c:12,f:42},ingredients:["5 oz sirloin steak","3 whole eggs","1 tbsp butter","salt + pepper","side of fruit"],prep:"Sear steak 3 min each side, fry eggs in same pan."},
+    {name:"Greek Yogurt Power Bowl",macros:{cal:660,p:48,c:78,f:14},ingredients:["2 cups Greek yogurt","1/4 cup granola","1 banana","2 tbsp honey","1 scoop protein powder"],prep:"Mix protein powder into yogurt, top with granola, banana, honey."},
+    {name:"Breakfast Burrito",macros:{cal:730,p:44,c:68,f:26},ingredients:["2 large flour tortillas","4 eggs scrambled","3 oz chorizo or turkey sausage","1/4 cup black beans","salsa","cheese"],prep:"Cook meat, scramble eggs, load tortillas, wrap tight."},
+    {name:"French Toast + Eggs",macros:{cal:710,p:40,c:76,f:24},ingredients:["3 thick slices brioche","3 eggs","1/2 cup milk","cinnamon","2 fried eggs on side","maple syrup"],prep:"Dip bread in egg-milk mix, cook 2 min per side. Fry eggs separately."},
+    {name:"Smoked Salmon Bagel",macros:{cal:680,p:42,c:65,f:22},ingredients:["1 large everything bagel","3 oz smoked salmon","2 tbsp cream cheese","capers","red onion","2 hard-boiled eggs"],prep:"Toast bagel, spread cream cheese, layer salmon and toppings."},
+    {name:"Cottage Cheese Scramble",macros:{cal:640,p:50,c:30,f:28},ingredients:["4 eggs","1/2 cup cottage cheese","1 tbsp butter","diced veggies","2 slices whole grain toast"],prep:"Whisk eggs with cottage cheese, scramble in butter with veggies."},
+    {name:"PB Banana Protein Shake",macros:{cal:720,p:50,c:80,f:20},ingredients:["2 scoops whey","1.5 cups whole milk","2 tbsp peanut butter","1 banana","1/2 cup oats","ice"],prep:"Blend everything until smooth. Down it fast."},
+    {name:"Chicken & Egg White Wrap",macros:{cal:650,p:55,c:58,f:16},ingredients:["4 oz grilled chicken","4 egg whites","1 large tortilla","spinach","salsa","1/4 avocado"],prep:"Scramble egg whites, add chicken, wrap with spinach and salsa."},
+    {name:"Overnight Oats",macros:{cal:690,p:40,c:90,f:16},ingredients:["1.5 cups rolled oats","1.5 cups whole milk","1 scoop protein powder","2 tbsp chia seeds","berries","honey"],prep:"Mix night before, refrigerate. Grab and go in the morning."},
+    {name:"Beef & Sweet Potato Hash",macros:{cal:740,p:48,c:68,f:24},ingredients:["5 oz lean ground beef","2 medium sweet potatoes","2 eggs","onion + peppers","olive oil"],prep:"Brown beef, cook diced sweet potato in same pan, crack eggs over top."},
+    {name:"Ricotta Toast",macros:{cal:660,p:38,c:70,f:22},ingredients:["3 slices sourdough","3/4 cup ricotta","3 eggs scrambled","honey drizzle","walnuts","berries"],prep:"Toast bread, spread ricotta, top with eggs and honey."},
+    {name:"Tuna Scramble",macros:{cal:620,p:58,c:30,f:24},ingredients:["1 can tuna (5 oz)","4 eggs","1 tbsp olive oil","onion","peppers","2 slices toast"],prep:"Sauté veggies, add tuna and eggs, scramble together."},
+  ],
+  lunch:[
+    {name:"Rice & Chicken Power Bowl",macros:{cal:850,p:55,c:90,f:26},ingredients:["6 oz chicken breast","1.5 cups cooked white rice","1 avocado","1 cup roasted veggies","1 tbsp olive oil"],prep:"Batch cook rice + chicken Sunday. Reheat and assemble."},
+    {name:"Big Turkey Sub",macros:{cal:820,p:52,c:80,f:22},ingredients:["6\" hoagie roll","5 oz deli turkey","2 oz provolone","avocado","spinach","Greek yogurt on side"],prep:"Build the sub, grab a yogurt cup on the side."},
+    {name:"Ground Beef Rice Bowl",macros:{cal:880,p:58,c:85,f:28},ingredients:["6 oz 90/10 ground beef","1.5 cups white rice","1/2 cup edamame","soy sauce","sesame oil","green onion"],prep:"Brown beef, season with soy + sesame, serve over rice."},
+    {name:"Tuna Pasta Salad",macros:{cal:800,p:54,c:82,f:20},ingredients:["2 cans tuna","2 cups cooked pasta","1/4 cup Greek yogurt","celery","red onion","lemon","mustard"],prep:"Mix everything cold. Great meal-prep option — keeps 4 days."},
+    {name:"Chicken Quesadillas",macros:{cal:860,p:56,c:76,f:30},ingredients:["6 oz grilled chicken","2 large flour tortillas","2 oz cheddar","black beans","salsa","sour cream"],prep:"Load tortilla with chicken, beans, cheese. Griddle 2 min per side."},
+    {name:"Steak & Rice Bowl",macros:{cal:900,p:58,c:88,f:28},ingredients:["6 oz sirloin","1.5 cups rice","broccoli","soy sauce","garlic","1 tbsp butter"],prep:"Sear steak, slice thin. Serve over rice with steamed broccoli."},
+    {name:"Salmon Fried Rice",macros:{cal:870,p:52,c:88,f:26},ingredients:["5 oz salmon fillet","1.5 cups day-old rice","2 eggs","soy sauce","sesame oil","frozen peas + carrots"],prep:"Scramble eggs in wok, add rice and veg, flake in cooked salmon."},
+    {name:"Big Chicken Caesar Wrap",macros:{cal:830,p:54,c:72,f:28},ingredients:["6 oz grilled chicken","1 large wrap","romaine lettuce","parmesan","Caesar dressing","croutons"],prep:"Grill or slice pre-cooked chicken. Wrap tight."},
+    {name:"Lentil + Ground Turkey Bowl",macros:{cal:820,p:58,c:80,f:18},ingredients:["5 oz ground turkey","1 cup cooked lentils","1 cup brown rice","onion + garlic","cumin + paprika"],prep:"Brown turkey with spices, mix with lentils and rice."},
+    {name:"Chipotle-Style Bowl",macros:{cal:870,p:54,c:88,f:26},ingredients:["6 oz chicken thigh","1.5 cups rice","1/2 cup black beans","corn","salsa","cheese","sour cream"],prep:"Cook chicken with chipotle seasoning. Build bowl."},
+    {name:"Peanut Noodle Bowl",macros:{cal:840,p:48,c:92,f:26},ingredients:["5 oz chicken or shrimp","2 cups lo mein noodles","3 tbsp peanut butter","soy sauce","lime","shredded carrots","edamame"],prep:"Cook noodles, whisk peanut sauce, toss everything together."},
+    {name:"Pulled Chicken Sandwich",macros:{cal:830,p:55,c:78,f:22},ingredients:["6 oz shredded chicken","1 brioche bun","BBQ sauce","coleslaw","side: fruit cup"],prep:"Slow cook or instant pot chicken, shred, mix with BBQ sauce."},
+    {name:"Greek Chicken Plate",macros:{cal:810,p:56,c:68,f:26},ingredients:["6 oz chicken thigh","1.5 cups rice","tzatziki","cucumber + tomato salad","pita","feta"],prep:"Marinate chicken in lemon + oregano, grill or bake."},
+    {name:"Shrimp Stir-Fry + Rice",macros:{cal:800,p:52,c:88,f:18},ingredients:["6 oz shrimp","1.5 cups rice","mixed stir-fry veg","soy sauce","ginger + garlic","sesame oil"],prep:"High heat wok, 3 min for shrimp, add veg and sauce."},
+    {name:"BLT Protein Bowl",macros:{cal:820,p:55,c:65,f:30},ingredients:["5 oz grilled chicken","4 strips turkey bacon","romaine","tomato","avocado","whole grain toast cubes","ranch"],prep:"Chop everything into a big bowl. Add dressing."},
+  ],
+  snack:[
+    {name:"Shake + Banana",macros:{cal:420,p:54,c:48,f:8},ingredients:["2 scoops whey","1.5 cups whole milk","1 banana","1 tbsp honey"],prep:"Blend or shake. Drink within 30 min of lifting."},
+    {name:"Cottage Cheese & Fruit",macros:{cal:390,p:40,c:44,f:6},ingredients:["1.5 cups cottage cheese","1 cup pineapple or berries","1 tbsp honey","handful of granola"],prep:"No prep needed."},
+    {name:"Turkey & Cheese Roll-Ups",macros:{cal:380,p:44,c:20,f:14},ingredients:["6 oz deli turkey","2 oz Swiss cheese","mustard","side of apple"],prep:"Roll turkey around cheese slices. No cooking."},
+    {name:"Hard Boiled Eggs + Rice Cake",macros:{cal:360,p:38,c:28,f:14},ingredients:["4 hard-boiled eggs","3 rice cakes","2 tbsp peanut butter"],prep:"Boil eggs Sunday. Rice cakes from pantry."},
+    {name:"Protein Bar + Whole Milk",macros:{cal:420,p:42,c:44,f:12},ingredients:["1 high-protein bar (Quest or similar)","1.5 cups whole milk"],prep:"Zero prep. Keep bars in your bag."},
+    {name:"Tuna + Crackers",macros:{cal:380,p:44,c:28,f:10},ingredients:["1 can tuna (5 oz)","whole grain crackers","mustard or hot sauce","1 apple"],prep:"Open can, drain, eat with crackers. Done."},
+    {name:"PB + Banana Rice Cakes",macros:{cal:400,p:14,c:60,f:14},ingredients:["4 rice cakes","3 tbsp peanut butter","1 banana","drizzle of honey"],prep:"Spread PB on rice cakes, top with banana slices."},
+    {name:"Greek Yogurt + Granola",macros:{cal:410,p:38,c:48,f:8},ingredients:["1.5 cups Greek yogurt","1/3 cup granola","1/2 cup berries","1 tbsp honey"],prep:"Layer in a container. Great pre-packed."},
+    {name:"Chocolate Milk + Almonds",macros:{cal:400,p:20,c:48,f:16},ingredients:["2 cups chocolate whole milk","1 oz almonds"],prep:"Dead simple. Chocolate milk is a legit recovery drink."},
+    {name:"Edamame + String Cheese",macros:{cal:370,p:38,c:26,f:14},ingredients:["1.5 cups shelled edamame (steamed)","2 string cheese sticks","light soy sauce"],prep:"Microwave frozen edamame 3 min."},
+    {name:"Smoked Salmon + Crackers",macros:{cal:390,p:42,c:24,f:14},ingredients:["3 oz smoked salmon","whole grain crackers","cream cheese","capers","lemon"],prep:"No cooking. Great desk snack."},
+    {name:"Protein Pudding",macros:{cal:380,p:46,c:32,f:8},ingredients:["1 scoop casein protein","1/2 cup Greek yogurt","1/2 cup almond milk","mix until thick","top with berries"],prep:"Mix casein into yogurt for thick pudding texture."},
+    {name:"Beef Jerky + Fruit",macros:{cal:360,p:38,c:38,f:8},ingredients:["2 oz beef jerky","1 banana","1 apple or orange"],prep:"Zero prep. Portable and non-perishable."},
+    {name:"Egg White Muffins",macros:{cal:390,p:42,c:24,f:12},ingredients:["6 egg whites","diced veggies","turkey sausage crumbles","cheese","muffin tin"],prep:"Batch bake Sunday. Grab 2–3 muffins straight from fridge."},
+    {name:"Ricotta + Toast",macros:{cal:400,p:34,c:42,f:12},ingredients:["3/4 cup ricotta","2 slices whole grain toast","honey","walnuts","banana"],prep:"Toast bread, spread ricotta, top with honey and walnuts."},
+  ],
+  dinner:[
+    {name:"Salmon + Sweet Potato + Salad",macros:{cal:890,p:48,c:88,f:28},ingredients:["6 oz salmon fillet","2 medium sweet potatoes","2 cups mixed greens","olive oil dressing"],prep:"Bake salmon 400°F 12 min. Microwave sweet potato 8 min."},
+    {name:"Pasta Bolognese",macros:{cal:920,p:50,c:95,f:24},ingredients:["3 oz dry pasta","5 oz lean ground beef","1 cup marinara","1 oz parmesan","side salad"],prep:"Batch-cook sauce Sunday. Weeknight: just boil pasta."},
+    {name:"Burrito Bowl",macros:{cal:870,p:52,c:85,f:22},ingredients:["5 oz chicken thigh","1.5 cups rice","1/2 cup black beans","salsa","sour cream","cheese"],prep:"One pan + rice cooker. 25 min total."},
+    {name:"Chicken Stir-Fry + Rice",macros:{cal:860,p:56,c:88,f:20},ingredients:["6 oz chicken breast","1.5 cups rice","broccoli + snap peas","soy sauce","ginger + garlic","sesame oil"],prep:"High-heat wok, 10 min total. Serve over rice."},
+    {name:"Ground Beef Tacos",macros:{cal:880,p:54,c:78,f:30},ingredients:["6 oz 90/10 ground beef","4 corn tortillas","cheese","salsa","avocado","black beans","lettuce"],prep:"Brown beef with taco seasoning. Load tortillas."},
+    {name:"Baked Chicken Thighs + Mashed Potatoes",macros:{cal:900,p:56,c:82,f:28},ingredients:["6 oz chicken thighs","3 medium potatoes","butter","milk","garlic","olive oil","green beans"],prep:"Bake thighs 425°F 25 min. Boil and mash potatoes."},
+    {name:"Shrimp Pasta",macros:{cal:870,p:50,c:92,f:22},ingredients:["6 oz shrimp","3 oz linguine","garlic","butter","white wine","cherry tomatoes","parmesan","spinach"],prep:"Cook pasta. Sauté shrimp in garlic butter 3 min. Toss together."},
+    {name:"Pork Tenderloin + Rice + Veg",macros:{cal:860,p:58,c:80,f:24},ingredients:["6 oz pork tenderloin","1.5 cups rice","asparagus or broccoli","olive oil","garlic + herbs"],prep:"Sear pork 3 min each side, finish in oven 400°F 12 min."},
+    {name:"Turkey Meatballs + Pasta",macros:{cal:890,p:54,c:90,f:24},ingredients:["6 oz ground turkey","3 oz spaghetti","marinara","parmesan","garlic bread slice","side salad"],prep:"Bake meatballs 375°F 18 min. Boil pasta. Combine."},
+    {name:"Beef Stir-Fry + Noodles",macros:{cal:900,p:52,c:94,f:26},ingredients:["5 oz sirloin sliced thin","2 cups lo mein noodles","bok choy","soy sauce + oyster sauce","sesame oil","ginger"],prep:"High heat 8 min total. Slice beef thin for fast cooking."},
+    {name:"Stuffed Bell Peppers",macros:{cal:840,p:52,c:80,f:22},ingredients:["3 bell peppers","5 oz ground turkey","1 cup rice","tomato sauce","cheese","onion + garlic"],prep:"Mix filling, stuff peppers, bake 375°F 30 min."},
+    {name:"Chicken Tikka Masala + Rice",macros:{cal:880,p:54,c:88,f:24},ingredients:["6 oz chicken breast","tikka masala sauce (jarred)","1.5 cups basmati rice","1/4 cup heavy cream","naan"],prep:"Simmer chicken in sauce 15 min. Serve over rice with naan."},
+    {name:"Tuna Steak + Quinoa",macros:{cal:820,p:58,c:72,f:24},ingredients:["6 oz tuna steak","1.5 cups cooked quinoa","edamame","soy glaze","sesame seeds","cucumber salad"],prep:"Sear tuna 90 sec per side (medium rare). Serve over quinoa."},
+    {name:"BBQ Chicken + Corn + Potatoes",macros:{cal:890,p:56,c:84,f:24},ingredients:["6 oz chicken breast","BBQ sauce","2 medium potatoes (roasted)","corn on the cob","butter"],prep:"Bake chicken with BBQ sauce 400°F 22 min. Roast potatoes same pan."},
+    {name:"Lamb + Couscous + Salad",macros:{cal:910,p:52,c:82,f:32},ingredients:["5 oz ground lamb","1.5 cups couscous","cucumber + tomato salad","tzatziki","lemon + mint"],prep:"Brown lamb with cumin and coriander. Couscous takes 5 min boiling water."},
+  ],
+  evening:[
+    {name:"Casein Shake + PB Toast",macros:{cal:360,p:38,c:28,f:12},ingredients:["1 scoop casein protein","1 cup milk","1 slice bread","1.5 tbsp peanut butter"],prep:"Casein digests slowly — ideal before sleep."},
+    {name:"Greek Yogurt Parfait",macros:{cal:340,p:30,c:42,f:6},ingredients:["1.5 cups Greek yogurt","1/4 cup granola","1 tbsp honey","1/2 cup berries"],prep:"Layer in a bowl. Done in 2 min."},
+    {name:"Cottage Cheese + Walnuts",macros:{cal:340,p:34,c:18,f:16},ingredients:["1.5 cups cottage cheese","1 oz walnuts","drizzle of honey","cinnamon"],prep:"Mix together. The casein in cottage cheese is ideal before bed."},
+    {name:"Protein Pudding",macros:{cal:360,p:44,c:24,f:8},ingredients:["1 scoop casein","1/2 cup Greek yogurt","almond milk to mix","berries on top"],prep:"Mix casein into yogurt thick, top with berries."},
+    {name:"String Cheese + Apple + Almonds",macros:{cal:330,p:22,c:36,f:14},ingredients:["3 string cheese sticks","1 large apple","1 oz almonds"],prep:"Zero prep. Good grab-and-go option."},
+    {name:"Hard Boiled Eggs + Fruit",macros:{cal:320,p:28,c:30,f:14},ingredients:["3 hard-boiled eggs","1 banana","handful of grapes"],prep:"Eggs can be batch-boiled Sunday."},
+    {name:"PB + Banana Toast",macros:{cal:380,p:14,c:52,f:14},ingredients:["2 slices whole grain bread","2 tbsp peanut butter","1 banana","honey drizzle"],prep:"Toast bread, spread PB, slice banana on top."},
+    {name:"Ricotta + Berries Bowl",macros:{cal:340,p:28,c:32,f:12},ingredients:["1 cup ricotta","1/2 cup mixed berries","1 tbsp honey","1 oz walnuts","vanilla extract"],prep:"Mix ricotta with vanilla, top with berries and walnuts."},
+    {name:"Tuna + Crackers",macros:{cal:320,p:38,c:22,f:8},ingredients:["1 can tuna","whole grain crackers","mustard","lemon"],prep:"Quick pantry snack. Zero cooking."},
+    {name:"Milk + Oats Bowl",macros:{cal:370,p:18,c:54,f:10},ingredients:["1 cup rolled oats","1.5 cups whole milk","banana","cinnamon","honey"],prep:"Microwave oats in milk 2 min. Top with banana."},
+    {name:"Beef Jerky + Peanut Butter Toast",macros:{cal:380,p:34,c:28,f:16},ingredients:["1.5 oz beef jerky","1 slice whole grain toast","2 tbsp peanut butter"],prep:"Toast bread. Good combo of casein-adjacent and fast protein."},
+    {name:"Smoked Salmon + Cucumber",macros:{cal:300,p:32,c:10,f:16},ingredients:["3 oz smoked salmon","sliced cucumber","cream cheese","capers","lemon"],prep:"Slice and plate. Easy low-carb late snack."},
+    {name:"Protein Hot Chocolate",macros:{cal:350,p:36,c:32,f:8},ingredients:["1 scoop chocolate casein","1.5 cups warm whole milk","1 tbsp cocoa powder","honey"],prep:"Mix casein and cocoa in warm milk. Drink before bed."},
+    {name:"Avocado Toast + Eggs",macros:{cal:420,p:22,c:38,f:22},ingredients:["2 slices sourdough","1/2 avocado","2 fried eggs","red pepper flakes","lemon"],prep:"Toast bread, mash avocado, top with fried eggs."},
+    {name:"Chocolate Milk + Almonds",macros:{cal:360,p:16,c:44,f:16},ingredients:["2 cups whole chocolate milk","1.5 oz almonds"],prep:"Dead simple. Chocolate milk has a good casein/whey split naturally."},
+  ]
+};
+
+// Active displayed meal per slot (index into library)
+const MEAL_ACTIVE = {breakfast:0, lunch:0, snack:0, dinner:0, evening:0};
+
 const MEALS_DATA = [
-  { label:"Breakfast",time:"7:30–8:00 AM",options:[
-    { name:"Builder's Oatmeal Bowl",macros:{cal:700,p:42,c:88,f:18},
-      ingredients:["1.5 cups rolled oats (dry)","1 scoop whey protein","1 banana","2 tbsp peanut butter","1 cup whole milk"],
-      prep:"Cook oats in milk, stir in protein powder off heat, top with sliced banana and PB."},
-    { name:"Egg & Potato Hash",macros:{cal:680,p:38,c:72,f:22},
-      ingredients:["4 whole eggs","2 medium potatoes (diced)","1 cup bell pepper + onion","1 oz cheese","1 slice toast"],
-      prep:"Crisp potatoes in skillet, add veggies, scramble in eggs, top with cheese."},
-  ]},
-  { label:"Lunch",time:"12:00–12:30 PM",options:[
-    { name:"Rice & Chicken Power Bowl",macros:{cal:850,p:55,c:90,f:26},
-      ingredients:["6 oz chicken breast","1.5 cups cooked white rice","1 avocado","1 cup roasted veggies","1 tbsp olive oil"],
-      prep:"Meal-prep friendly. Batch cook rice + chicken Sun night."},
-    { name:"Big Turkey Sub",macros:{cal:820,p:52,c:80,f:22},
-      ingredients:["6\" hoagie roll","5 oz deli turkey","2 oz provolone","avocado","spinach","side: Greek yogurt + fruit"],
-      prep:"Quick build. Add Greek yogurt on the side for extra protein."},
-  ]},
-  { label:"Post-Workout Snack",time:"6:30 PM (gym nights)",options:[
-    { name:"Shake + Banana",macros:{cal:420,p:54,c:48,f:8},
-      ingredients:["2 scoops whey","1.5 cups whole milk","1 banana","1 tbsp honey"],
-      prep:"Blend or shake. Drink within 30 min of lifting."},
-    { name:"Cottage Cheese & Fruit",macros:{cal:390,p:40,c:44,f:6},
-      ingredients:["1.5 cups cottage cheese (2%)","1 cup pineapple or berries","1 tbsp honey","handful of granola"],
-      prep:"No prep needed. Good if you skipped the shake."},
-  ]},
-  { label:"Dinner",time:"7:30–8:00 PM",options:[
-    { name:"Salmon + Sweet Potato + Salad",macros:{cal:890,p:48,c:88,f:28},
-      ingredients:["6 oz salmon fillet","2 medium sweet potatoes","2 cups mixed greens","olive oil dressing"],
-      prep:"Bake salmon 400°F 12 min. Microwave sweet potato 8 min."},
-    { name:"Pasta Bolognese",macros:{cal:920,p:50,c:95,f:24},
-      ingredients:["3 oz dry pasta","5 oz lean ground beef (90/10)","1 cup marinara","1 oz parmesan","side salad"],
-      prep:"Batch-cook sauce Sunday. Weeknight: just boil pasta."},
-    { name:"Burrito Bowl",macros:{cal:870,p:52,c:85,f:22},
-      ingredients:["5 oz chicken thigh","1.5 cups rice","1/2 cup black beans","salsa","sour cream","cheese"],
-      prep:"One pan + rice cooker. 25 min total."},
-  ]},
-  { label:"Evening Snack",time:"9:00–9:30 PM",options:[
-    { name:"Casein Shake + PB Toast",macros:{cal:360,p:38,c:28,f:12},
-      ingredients:["1 scoop casein protein","1 cup milk","1 slice bread","1.5 tbsp peanut butter"],
-      prep:"Casein digests slowly — ideal before sleep for muscle protein synthesis."},
-    { name:"Greek Yogurt Parfait",macros:{cal:340,p:30,c:42,f:6},
-      ingredients:["1.5 cups Greek yogurt","1/4 cup granola","1 tbsp honey","1/2 cup berries"],
-      prep:"Layer in a bowl. Done in 2 min."},
-  ]},
+  {label:"Breakfast",      time:"7:30–8:00 AM",          key:"breakfast"},
+  {label:"Lunch",          time:"12:00–12:30 PM",         key:"lunch"},
+  {label:"Post-Workout",   time:"6:30 PM (gym nights)",   key:"snack"},
+  {label:"Dinner",         time:"7:30–8:00 PM",           key:"dinner"},
+  {label:"Evening Snack",  time:"9:00–9:30 PM",           key:"evening"},
 ];
 
 const TIPS_DATA = [
@@ -982,63 +1068,119 @@ function closeSessionModal(e){
 // ═══════════════════════════════════════════
 // MEALS
 // ═══════════════════════════════════════════
-let mealExpanded={};
+let mealExpanded = {};
+
+// Load saved active meal indices from store
+function initMealActives(){
+  const saved = store.mealActives || {};
+  Object.keys(MEAL_ACTIVE).forEach(k=>{ if(saved[k]!==undefined) MEAL_ACTIVE[k]=saved[k]; });
+}
+
+function saveMealActives(){
+  store.mealActives = {...MEAL_ACTIVE};
+  persist();
+}
+
+function swapMeal(e, slotKey){
+  e.stopPropagation();
+  const lib = MEAL_LIBRARY[slotKey];
+  const current = MEAL_ACTIVE[slotKey];
+  // Pick a random different index
+  let next;
+  do { next = Math.floor(Math.random() * lib.length); } while(next === current && lib.length > 1);
+  MEAL_ACTIVE[slotKey] = next;
+  // If previously eaten, un-eat it since the meal changed
+  const eatenKey = `${slotKey}`;
+  if(day.eatenMeals && day.eatenMeals.includes(eatenKey)){
+    const idx = day.eatenMeals.indexOf(eatenKey);
+    day.eatenMeals.splice(idx, 1);
+    // recompute macros from scratch
+    recomputeMacros();
+  }
+  saveMealActives();
+  renderMeals();
+  renderMacrosDash();
+}
+
+function recomputeMacros(){
+  day.macros = {cal:0, p:0, c:0, f:0};
+  (day.eatenMeals||[]).forEach(key=>{
+    const lib = MEAL_LIBRARY[key];
+    if(!lib) return;
+    const meal = lib[MEAL_ACTIVE[key]||0];
+    if(!meal) return;
+    day.macros.cal += meal.macros.cal;
+    day.macros.p   += meal.macros.p;
+    day.macros.c   += meal.macros.c;
+    day.macros.f   += meal.macros.f;
+  });
+  persist();
+}
 
 function renderMeals(){
-  const eaten=day.eatenMeals||[];
-  document.getElementById("meal-slots").innerHTML = MEALS_DATA.map((slot,si)=>`
-    <div class="meal-slot">
+  const eaten = day.eatenMeals || [];
+  document.getElementById("meal-slots").innerHTML = MEALS_DATA.map(slot=>{
+    const lib     = MEAL_LIBRARY[slot.key];
+    const idx     = MEAL_ACTIVE[slot.key] || 0;
+    const meal    = lib[idx];
+    const isEaten = eaten.includes(slot.key);
+    const isOpen  = !!mealExpanded[slot.key];
+    const macrosStr = `${meal.macros.cal} cal · P:${meal.macros.p}g · C:${meal.macros.c}g · F:${meal.macros.f}g`;
+    const macrosEncoded = encodeURIComponent(JSON.stringify(meal.macros));
+    return `<div class="meal-slot">
       <div class="meal-slot-hdr">
         <div><span class="meal-slot-name">${slot.label}</span><span class="meal-slot-time">${slot.time}</span></div>
+        <span style="font-size:11px;color:var(--text4)">${idx+1}/${lib.length}</span>
       </div>
-      ${slot.options.map((meal,mi)=>{
-        const key=`${si}-${mi}`;
-        const isEaten=eaten.includes(key);
-        const isOpen=!!mealExpanded[key];
-        return `<div class="meal-option${isEaten?" logged-meal":""}">
-          <div class="meal-option-hdr" onclick="toggleExpand('${key}')">
-            <div>
-              <div class="meal-name">${meal.name}</div>
-              <div class="meal-macros-line">${meal.macros.cal} cal · P:${meal.macros.p}g · C:${meal.macros.c}g · F:${meal.macros.f}g</div>
-            </div>
-            <div class="meal-actions">
-              <button class="eat-btn${isEaten?" eaten":""}" onclick="toggleEat(event,'${key}',${JSON.stringify(meal.macros).replace(/"/g,"&quot;")})">
-                ${isEaten?"✓ EATEN":"EAT"}
-              </button>
-              <span class="chevron">${isOpen?"▲":"▼"}</span>
-            </div>
+      <div class="meal-option${isEaten?" logged-meal":""}">
+        <div class="meal-option-hdr" onclick="toggleExpand('${slot.key}')">
+          <div>
+            <div class="meal-name">${meal.name}</div>
+            <div class="meal-macros-line">${macrosStr}</div>
           </div>
-          ${isOpen?`<div class="meal-detail">
-            ${meal.ingredients.map(i=>`<div class="ingredient">${i}</div>`).join("")}
-            <div class="meal-prep">👨‍🍳 ${meal.prep}</div>
-          </div>`:""}
-        </div>`;
-      }).join("")}
-    </div>`).join("");
+          <div class="meal-actions">
+            <button class="swap-btn" onclick="swapMeal(event,'${slot.key}')">🔀 SWAP</button>
+            <button class="eat-btn${isEaten?" eaten":""}" onclick="toggleEat(event,'${slot.key}','${macrosEncoded}')">
+              ${isEaten?"✓ EATEN":"EAT"}
+            </button>
+            <span class="chevron">${isOpen?"▲":"▼"}</span>
+          </div>
+        </div>
+        ${isOpen?`<div class="meal-detail">
+          ${meal.ingredients.map(i=>`<div class="ingredient">${i}</div>`).join("")}
+          <div class="meal-prep">👨‍🍳 ${meal.prep}</div>
+          <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="swap-btn" style="font-size:11px;padding:6px 14px" onclick="swapMeal(event,'${slot.key}')">🔀 Try another option</button>
+          </div>
+        </div>`:""}
+      </div>
+    </div>`;
+  }).join("");
 }
 
 function toggleExpand(key){
-  mealExpanded[key]=!mealExpanded[key];
+  mealExpanded[key] = !mealExpanded[key];
   renderMeals();
 }
 
-function toggleEat(e,key,macros){
+function toggleEat(e, slotKey, macrosEncoded){
   e.stopPropagation();
-  if(!day.eatenMeals) day.eatenMeals=[];
-  const idx=day.eatenMeals.indexOf(key);
-  if(idx>=0){
-    day.eatenMeals.splice(idx,1);
-    day.macros.cal-=macros.cal; day.macros.p-=macros.p;
-    day.macros.c-=macros.c;    day.macros.f-=macros.f;
+  if(!day.eatenMeals) day.eatenMeals = [];
+  const macros = JSON.parse(decodeURIComponent(macrosEncoded));
+  const idx = day.eatenMeals.indexOf(slotKey);
+  if(idx >= 0){
+    day.eatenMeals.splice(idx, 1);
+    day.macros.cal -= macros.cal; day.macros.p -= macros.p;
+    day.macros.c   -= macros.c;   day.macros.f -= macros.f;
   } else {
-    day.eatenMeals.push(key);
-    day.macros.cal+=macros.cal; day.macros.p+=macros.p;
-    day.macros.c+=macros.c;    day.macros.f+=macros.f;
+    day.eatenMeals.push(slotKey);
+    day.macros.cal += macros.cal; day.macros.p += macros.p;
+    day.macros.c   += macros.c;   day.macros.f += macros.f;
   }
-  day.macros.cal=Math.max(0,day.macros.cal);
-  day.macros.p=Math.max(0,day.macros.p);
-  day.macros.c=Math.max(0,day.macros.c);
-  day.macros.f=Math.max(0,day.macros.f);
+  day.macros.cal = Math.max(0, day.macros.cal);
+  day.macros.p   = Math.max(0, day.macros.p);
+  day.macros.c   = Math.max(0, day.macros.c);
+  day.macros.f   = Math.max(0, day.macros.f);
   persist();
   renderMeals();
   renderMacrosDash();
@@ -1124,6 +1266,7 @@ function renderSymptomHistory(){
 // ═══════════════════════════════════════════
 // BOOT
 // ═══════════════════════════════════════════
+initMealActives();
 initDashboard();
 renderPick();
 renderMeals();
