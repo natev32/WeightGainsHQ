@@ -363,6 +363,28 @@ html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var
         <div class="macro-top"><span>Fat</span><span style="color:var(--purple)" id="dm-fat">0 / 100g</span></div>
         <div class="prog-wrap"><div class="prog-fill" id="dm-fat-bar" style="width:0%;background:var(--purple)"></div></div>
       </div>
+      <div style="border-top:1px solid var(--border);margin-top:14px;padding-top:12px">
+        <div style="font-size:11px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">Manual Add</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" id="madd-cal" placeholder="kcal" min="0" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--body);outline:none;width:100%">
+            <button onclick="manualAdd('cal')" style="background:var(--yellow);color:#0d0d1a;border:none;border-radius:var(--radius);padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--body);white-space:nowrap">+ Cal</button>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" id="madd-pro" placeholder="g" min="0" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--body);outline:none;width:100%">
+            <button onclick="manualAdd('pro')" style="background:var(--cyan);color:#0d0d1a;border:none;border-radius:var(--radius);padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--body);white-space:nowrap">+ Pro</button>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" id="madd-carb" placeholder="g" min="0" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--body);outline:none;width:100%">
+            <button onclick="manualAdd('carb')" style="background:var(--orange);color:#0d0d1a;border:none;border-radius:var(--radius);padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--body);white-space:nowrap">+ Carb</button>
+          </div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input type="number" id="madd-fat" placeholder="g" min="0" style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:7px 10px;color:var(--text);font-size:13px;font-family:var(--body);outline:none;width:100%">
+            <button onclick="manualAdd('fat')" style="background:var(--purple);color:#fff;border:none;border-radius:var(--radius);padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--body);white-space:nowrap">+ Fat</button>
+          </div>
+        </div>
+        <button onclick="resetMacros()" style="margin-top:10px;width:100%;background:transparent;border:1px solid var(--border2);border-radius:var(--radius);padding:7px;color:var(--text3);font-size:12px;cursor:pointer;font-family:var(--body)">Reset Today's Macros</button>
+      </div>
     </div>
 
     <!-- Weight log -->
@@ -812,6 +834,24 @@ function logWeight(){
   refreshWeightDisplay();
   renderWeightHistory();
   renderWeightChart();
+}
+
+function manualAdd(type){
+  const idMap={cal:'madd-cal',pro:'madd-pro',carb:'madd-carb',fat:'madd-fat'};
+  const keyMap={cal:'cal',pro:'p',carb:'c',fat:'f'};
+  const val=parseFloat(document.getElementById(idMap[type]).value);
+  if(!val||val<=0) return;
+  day.macros[keyMap[type]]=(day.macros[keyMap[type]]||0)+val;
+  persist();
+  document.getElementById(idMap[type]).value='';
+  renderMacrosDash();
+}
+
+function resetMacros(){
+  day.macros={cal:0,p:0,c:0,f:0};
+  day.eatenMeals=[];
+  persist();
+  renderMacrosDash();
 }
 
 function renderMacrosDash(){
